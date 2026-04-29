@@ -199,7 +199,7 @@
         color: var(--or);
     }
     .badge-boost {
-        /* position: absolute; */
+        position: absolute; 
         top: 1rem; right: 1rem;
         font-size: 0.55rem;
         letter-spacing: 0.2em;
@@ -271,7 +271,7 @@
     {% for article in articles %}
     <div class="article-card fade-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
         {% if article.boosted %}
-        <span class="badge-boost">Article mis en avant dans vos suggestions</span>
+        <span class="badge-boost">suggestion</span>
         {% endif %}
         <img src="/static/images/articles/{{ article.image }}" alt="{{ article.nom }}">
         <div class="article-card-overlay">
