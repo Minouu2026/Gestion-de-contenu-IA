@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% block title %}IA-TSENA - Boutique{% endblock %}
+{% block styles %}
+<style>
+    .hero {
+        height: 100vh;
+        background: var(--noir);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .hero::before {
+        content: '';
+        inset: 0;
+        position: absolute;
+        background: radial-gradient(elipse at 60% 50%, rgba(201, 168, 76, 0.88) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .hero-ligne {
+        font-size: 0.65rem;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: var(--or);
+        margin-bottom: 1.5rem;
+        animation: fadeup 0.8s ease forwards;
+    }
+    .hero-titre {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(3.5rem, 8vw, 7rem);
+        font-weight: 300;
+        color: var(--blanc);
+        line-height: 1.05;
+        letter-spacing: 0.05em;
+        animation: fadeUp 0.8s ease 0.15s both;
+    }
+    .hero-titre em {
+        font-style: italic;
+        color: var(--or);
+    }
+    .hero-sous {
+        font-size: 0.75rem;
+        letter-spacing: 0.2rem;
+        color: rgba(248, 246, 241, 0.4);
+        margin-top: 1.5rem;
+        animation: fadeUp 0.8s ease 0.3s both;
+    }
+    .hero.btn {
+        margin-top: 3rem;
+        animation: fadeUp 0.8s ease 0.45s  both;
+    }
+    .hero-scroll {
+        position: absolute;
+        bottom: 2.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        color: rgba(248, 246, 241, 0.3);
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        animation: fadeUP 1s ease 0.8s both;
+    }
+    .hero-scroll-line {
+        width: 1px;
+        height: 40px;
+        background: linear-gradient(to bottom, var(--or), transparent);
+        animation: scrolline 1.5s ease infinite;
+    }
+    @keyframes scrolline {
+        0% { transform: scaleY(0); transform-origin: top; }
+        50% { transform: scaleY(1); transform-origin: top; }
+        51% { transform: scaleY(1); transform-origin: bottom; }
+        100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+    .section-header {
+        text-align: center;
+        padding: 5rem 2rem 3rem;
+    }
+    .section-titre {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        font-weight: 300;
+        color: var(--noir);
+        letter-spacing: 0.05rem;
+    }
+    .section-divider {
+        width: 40px;
+        height: 1px;
+        background: var(--or);
+        margin: 1.5rem auto 0;
+    }
+    .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 10px;
+        padding: 0 2px 2px;
+        max-width: 1400px;
+        margin: 0 auto;
+        margin-bottom: 10px;
+    }
+    .article-card {
+        position: relative;
+        background: var(--noir);
+        overflow: hidden;
+        aspect-ratio: 3/4;
+        cursor: none;
+        border-radius: 10px;
+    }
+    .article-card img {
+        width: 100%;
+        height: 100%;
+        
+        object-fit: cover;
+        transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        opacity: 0.85;
+    }
+    .article-card:hover img {
+        transform: scale(1.06);
+        opacity: 1;
+    }
+    .article-card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(10, 10, 10, 0.9) 0%, transparent 50%);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding: 1.8rem;
+        transition: all var(--transition);
+    }
+    .article-card-tag {
+        font-size: 0.55rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--or);
+        margin-bottom: 0.4rem;
+    }
+    .article-card-nom {
+        font-family: 'Comorant Garamond', serif;
+        font-size: 1.3rem;
+        font-weight: 300;
+        color: var(--blanc);
+        line-height: 1.2;
+    }
+    .article-card-prix {
+        font-size: 0.75rem;
+        color: rgba(248, 246, 241, 0.5);
+        margin-top: 0.4rem;
+        letter-spacing: 0.1em;
+    }
+    .article-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 1rem;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: all var(--transition);
+    }
+    .article-card:hover .article-card-actions {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .btn-voir {
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--noir);
+        background: var(--or);
+        padding: 0.6rem 1.5rem;
+        text-decoration: none;
+        transition: all var(--transition);
+        cursor: none;
+    }
+    .btn-voir:hover {
+        background: var(--or-clair);
+    }
+    .btn-like {
+        background: none;
+        border: 1px solid rgba(248, 246, 241, 0.3);
+        color: var(--blanc);
+        padding: 0.6rem 1rem;
+        font-size: 0.75rem;
+        cursor: none;
+        transition: all var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-like:hover, .btn-like.liked {
+        border-color: var(--or);
+        color: var(--or);
+    }
+    .badge-boost {
+        /* position: absolute; */
+        top: 1rem; right: 1rem;
+        font-size: 0.55rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase; 
+        color: var(--noir);
+        background: var(--or);
+        padding: 0.3rem 0.8rem;
+        margin-left: 5px;
+        margin-top: 5px;
+        border-radius: 5px;
+    }
+    .suggestions-section {
+        background: var(--noir);
+        padding: 5rem 0;
+    }
+    .suggestions-section .section-titre {
+        color: var(--blanc);
+    }
+    .suggestions-section .section-divider {
+        color: var(--or);
+    }
+    .suggestions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 10px;
+        padding: 2rem 2px 0;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+        color: var(--gris);
+    }
+    .empty-state-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.3;
+    }
+    .empty-state p {
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="hero">
+    <p class="hero-ligne">Nouvelle collection 2026</p>
+    <h1 class="hero-titre">La mode, <br><em>réinventée</em></h1>
+    <p class="hero-sous">Découvrez des pièces sélectionnées pour vous</p>
+    <div class="hero-btn">
+        <a href="#boutique" class="btn-or">Explorer la collection</a>
+    </div>
+    <div class="hero-scroll">
+        <div class="hero-scroll-line"></div>
+        <span>Scroll</span>
+    </div>
+</section>
+<section class="boutique">
+    <div class="section-header">
+        <span class="section-tag">Notre collection</span>
+        <h2 class="section-titre">Tous les articles</h2>
+        <div class="section-divider"></div>
+    </div>
+
+
+    {% if articles %}
+    <div class="articles-grid">
+    {% for article in articles %}
+    <div class="article-card fade-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+        {% if article.boosted %}
+        <span class="badge-boost">Article mis en avant dans vos suggestions</span>
+        {% endif %}
+        <img src="/static/images/articles/{{ article.image }}" alt="{{ article.nom }}">
+        <div class="article-card-overlay">
+            <span class="article-card-tag">{{ article.categorie }}</span>
+            <h3 class="article-card-nom">{{ article.nom }}</h3>
+            <p class="article-card-prix">{{ "%.2f"|format(article.prix) }} Ar</p>
+            <div class="article-card-actions">
+                <a href="{{ url_for('article_detail', id=article.id) }}" class="btn-voir">Voir</a>
+                <button class="btn-like" onclick="likerArticle({{ article.id }}, this)">
+                    <span class="like-count">{{ article.likes }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    </div>
+    {% else %}   
+    <div class="empty-state">
+        <div class="empty-state-icon">  
+            <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+        <p>Aucun article disponible pour le moment.</p>
+    </div> 
+    {% endif %}
+</section>
+
+{% if suggestions %}
+<section class="suggestions-section">
+    <div class="section-header">
+        <h2 class="section-titre" style="color:var(--blanc)">Sélection pour vous</h2>
+        <div class="section-divider"></div>
+    </div>
+    <div class="suggestions-grid">
+        {% for article in suggestions %}
+        <div class="article-card fade-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <img src="/static/images/articles/{{ article.image }}" alt="{{ article.nom }}" >
+            <div class="article-card-overlay">
+                <span class="article-card-tag">{{ article.categorie }}</span>
+                <h3 class="article-card-nom">{{ article.nom }}</h3>
+                <p class="article-card-prix">{{ (article.prix) }} Ar</p>
+                <div class="article-card-actions">
+                    <a href="{{ url_for('article_detail', id=article.id) }}" class="btn-voir">Voir</a>
+                    <button class="btn-like" onclick="likerArticle({{ article.id }}, this)">
+                        <i class="fa-regular fa-heart"></i>                      
+                        <span class="like-count">{{ article.likes }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+    function likerArticle(id, btn) {
+        if (btn.classList.contains('Liked')) return;
+        fetch('/like/${id}', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                btn.classList.add('liked');
+                btn.querySelector('like-count').textContent = data.likes;
+                btn.innerHTML = `<i class="fa-solid fa-heart"></i><span class="like-count">${data.likes}</span>`;
+            })
+            .catch(err => console.error('Erreur like:', err));
+    }
+</script>
+{% endblock %}

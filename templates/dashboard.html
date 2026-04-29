@@ -1,0 +1,462 @@
+{% extends "base.html" %}
+{% block title %}IA-TSENA - Dashboard{% endblock %}
+{% block styles %}
+<style>
+    .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    .dashboard-header {
+        margin-bottom: 3rem;
+        border-bottom: 1px solid var(--gris-clair);
+        padding: 2rem;
+    }
+    .dashboard-titre {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 300;
+        color: var(--noir);
+        letter-spacing: 0.05em;
+    }
+    .dashboard-sous {
+        font-size: 0.75rem;
+        color: var(--gris);
+        margin-top: 0.5rem;
+        letter-spacing: 0.5em;
+    }
+    .kpis {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    .kpi-card {
+        background: var(--blanc);
+        border: 1px solid var(--gris);
+        padding: 1.8rem;
+        position: relative;
+        overflow: hidden;
+        transition: all var(--transition);
+    }
+    .kpi-card:before {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 0;
+        width: 100%; height: 3px;
+        background: var(--or);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--transition);
+    }
+    .kpi-card:hover::before {
+        transform: scaleX(1);
+    }
+    .kpi-icon {
+        font-size: 1.2rem;
+        color: var(--or);
+        margin-bottom: 1rem;
+    }
+    .kpi-value {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.8rem;
+        font-weight: 300;
+        color: var(--noir);
+        line-height: 1;
+    }
+    .kpi-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gris);
+        margin-top: 0.5rem;
+    }
+    .section-titre-dash {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        margin-top: 3rem;
+    }
+    .section-badge {
+        font-size: 0.55rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.8rem;
+        border-radius: 0;
+    }
+    .badge-vert {
+        background: rgba(34, 197, 94, 0.1);
+        color: #16a34a;
+        border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .badge-rouge {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-gris {
+        background: rgba(136, 136, 128, 0.1);
+        color: var(--gris);
+        border: 1px solid var(--gris-clair);
+    }
+    .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid var(--gris-clair);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.8rem;
+    }
+    thead {
+        background: var(--noir);
+        color: var(--blanc);
+    }
+    thead th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.6rem;
+        letter-spacing: 0.2rem;
+        text-transform: uppercase;
+        font-weight: 400;
+        color: rgba(248, 246, 241, 0.6);
+    }
+    thead th:first-child {
+        color: var(--or);
+    }
+    tbody tr {
+        border-bottom: 1px solid var(--gris-clair);
+        transition: background var(--transition);
+    } 
+    tbody tr:hover {
+        background: rgba(201, 168, 76, 0.04);
+    }
+    tbody tr:last-child {
+        border-bottom: none;
+    }
+    tbody td {
+        padding: 1rem 1.5rem;
+        color: var(--noir);
+        vertical-align: middle;
+    }
+    .td-nom {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1rem;
+        font-weight: 400;
+    }
+    .td-categorie {
+        font-size: 0.65rem;
+        letter-spacing: 0.15rem;
+        text-transform: uppercase;
+        color: var(--gris);
+    }
+    .td-stat {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.3rem;
+        color: var(--noir);
+
+    }
+    .td-stat.or {
+        color: var(--or);
+    }
+    .progress-bar {
+        width: 100px;
+        height: 3px;
+        background: var(--gris-clair);
+        margin-top: 4px;
+    }
+    .progress-fill {
+        height: 100%;
+        background: var(--or);
+        transition: width 1s ease;
+    }
+    .btn-booster {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: 'Jost', sans-serif;
+        font-size: 0.6rem;
+        font-weight: 400;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--noir);
+        background: var(--or);
+        border: none;
+        transition: all var(--transition);
+    }
+    .btn-booster:hover {
+        background: var(--or-clair);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(201, 168, 76, 0.3);
+    }
+    .btn-supprimer {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.6rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        /* color: #dc2626; */
+        background: transparent;
+        /* border: 1px solid rgba(220, 38, 38, 0.3); */
+        border: none;
+        
+        padding: 0.6rem 1rem;
+        cursor: none;
+        transition: all var(--transition);
+        margin-left: 0.5rem;
+    }
+    .btn-supprimer:hover {
+        background: rgba(220, 38, 38, 0.1);
+    }
+    .boosted-tag {
+        font-size: 0.55rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--or);
+        border: 1px solid rgba(201, 168, 76, 0.4);
+        padding: 0.3rem 0.8rem;
+    }
+    .dashboard-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 2rem;
+    }
+    .empty-row td {
+        text-align: center;
+        padding: 3rem;
+        color: var(--gris);
+        font-size: 0.75rem;
+        letter-spacing: 0.1rem;
+    }
+    @media (max-width: 768px) {
+        .kpis {
+            grid-template-columns: repeat(2, 1fr);
+        
+        }
+    }
+</style>
+
+{% endblock %}
+{% block content %}
+<div class="dashboard">
+    <div class="dashboard-header fade-up">
+        <span class="dashboard-titre">Tableau de bord de gestion</span>
+        <p class="dashboard-sous">Analyse en temps réel des performances des articles</p>
+    </div>
+    <div class="kpis fade-up">
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-shirt"></i></div>
+            <div class="kpi-value">{{ tous|length }}</div>
+            <div class="kpi-label">Total articles</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-regular fa-eye"></i></div>
+            <div class="kpi-value">{{ tous|sum(attribute='vues') }}</div>
+            <div class="kpi-label">Total vues</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-regular fa-heart"></i></div>
+            <div class="kpi-value">{{ tous|sum(attribute='likes') }}</div>
+            <div class="kpi-label">Total likes</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-icon"><i class="fa-solid fa-rocket"></i></div>
+            <div class="kpi-value">{{ tous|selectattr('boosted')|list|length }}</div>
+            <div class="kpi-label">Articles boostés</div>
+        </div>
+    </div>
+    <div class="dashboard-actions">
+        <a href="{{ url_for('ajouter_article') }}" class="btn-or">
+            <i class="fa-solid fa-plus"></i>&nbsp; Ajouter un article
+        </a>
+    </div>
+    <div class="section-titre-dash">
+        <h2>Article populaires</h2>
+        <span class="section-badge badge-vert">
+            <i class="fa-solid fa-arrow-trend-up"></i>Top performances
+        </span>
+    </div>
+    <div class="table-wrapper fade-up">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Article</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Vues</th>
+                    <th>Likes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if populaires %}
+                {% for article in populaires %}
+                <tr>
+                    <td style="color: var(--or); font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;">{{ loop.index }}</td>
+                    <td class="td-nom">{{ article.nom }}</td>
+                    <td class="td-categorie">{{ article.categorie }}</td>
+                    <td>{{ article.prix }} Ar</td>
+                    <td>
+                        <div class="td-stat">{{ article.vues }}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ [article.vues, 500]|min / 5}}%;"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="td-stat">{{ article.likes }}</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ [article.likes, 100]|min }}%;"></div>
+                        </div>
+                    </td>
+                    <td>
+                        <form action="{{ url_for('supprimer_article', id=article.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer cet article ?')">
+                                <img src="/static/images/articles/delete.png" width="20" height="20" alt="delete">
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="7">Aucun article populaire pour le moment</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="section-titre-dash">
+        <h2>Article faibles</h2>
+        <span class="section-badge badge-rouge">
+            <i class="fa-solid fa-arrow-trend-down"></i>Nécessite un boost
+        </span>
+    </div>
+    <div class="table-wrapper fade-up">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Article</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Vues</th>
+                    <th>Likes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if faibles %}
+                {% for article in faibles %}
+                <tr>
+                    <td style="color: #dc2626; font-family: 'Cormorant Garamond', serif; font-size: 1.2rem;">{{ loop.index }}</td>
+                    <td class="td-nom">{{ article.nom }}</td>
+                    <td class="td-categorie">{{ article.categorie }}</td>
+                    <td>{{ article.prix }} Ar</td>
+                    <td>
+                        <div class="td-stat" style="color: #dc2626;">{{ article.vues }}</div>
+                    </td>
+                    <td>
+                        <div class="td-stat" style="color: #dc2626;">{{ article.likes }}</div>
+        
+                    </td>
+                    <td>
+                        <form action="{{ url_for('booster_article', id=article.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-booster" onclick="return confirm('Booster cet article ?')">
+                                <i class="fa-solid fa-rocket"></i>Booster
+                            </button>
+                        </form>
+                        <form action="{{ url_for('supprimer_article', id=article.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer cet article ?')">
+                                <img src="/static/images/articles/delete.png" width="16" height="16" alt="delete">
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="7">
+                        <i class="fa-solid fa-circle-check" style="color: #16a34a; margin-right: 0.5rem;"></i>Tous les articles ont de bonnes interactions
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="section-titre-dash">
+        <h2>Tous les articles</h2>
+        <span class="section-badge badge-gris">{{ tous|length }} articles</span>
+    </div>
+    <div class="table-wrapper fade-up">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Article</th>
+                    <th>Catégorie</th>
+                    <th>Prix</th>
+                    <th>Vues</th>
+                    <th>Likes</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if tous %}
+                {% for article in tous %}
+                <tr>
+                    <td style="color: var(--gris); font-size: 0.75rem;">#{{ article.id }}</td>
+                    <td class="td-nom">{{ article.nom }}</td>
+                    <td class="td-categorie">{{ article.categorie }}</td>
+                    <td>{{ article.prix }} Ar</td>
+                    <td>
+                        <div class="td-stat">{{ article.vues }}</div>
+                
+                    </td>
+                    <td>
+                        <div class="td-stat">{{ article.likes }}</div>
+                       
+                    </td>
+                    <td>
+                        {% if article.boosted %}
+                        <span class="boosted-tag">
+                            <i class="fa-solid fa-rocket"></i>Boosté
+                        </span>
+                        {% elif article.est_populaire() %}
+                        <span class="section-badge badge-vert">Populaire</span>
+                        {% elif article.est_faible() %}
+                        <span class="section-badge badge-rouge">Faible</span>
+                        {% else %}
+                        <span class="section-badge badge-gris">Normal</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if article.boosted == false and article.est_faible() %}
+                        <form action="{{ url_for('booster_article', id=article.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-booster" onclick="return confirm('Booster cet article ? ?')">
+                                <i class="fa-solid fa-rocket"></i>Booster
+                            </button>
+                        </form>
+                        {% endif %}
+                        <form action="{{ url_for('supprimer_article', id=article.id) }}" method="POST" style="display: inline;">
+                            <button type="submit" class="btn-supprimer" onclick="return confirm('Supprimer cet article ?')">
+                                <img src="/static/images/articles/delete.png" width="16" height="16" alt="delete">
+                            </button>
+                        </form>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr class="empty-row">
+                    <td colspan="8">Aucun article dans la base de données</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

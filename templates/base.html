@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IA-TSENA{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2family=Comorant+Garamond:ital,wght@0,300;0;400;0;600;1;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* variables */
+        :root {
+            --noir: #0a0a0a;
+            --or: #c9a84c;
+            --or-clair: #e8c97a;
+            --blanc: #f8f6f1;
+            --gris: #888880;
+            --gris-clair: #e8e6e0;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.94);
+        }
+        /* reset & base */
+        html { scroll-behavior: smooth;}
+        body {
+            background-color: var(--blanc);
+            color: var(--noir);
+            font-family: 'Jost', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* curseur personnalisé */
+        body { cursor: none; }
+        .cursor {
+            width: 8px; height: 8px;
+            background: var(--or);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease;
+        }
+        .cursor-ring{
+            width: 32px; height: 32px;
+            border: 1px solid var(--or);
+            border-radius: 50px;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.15s ease;
+            opacity: 0.6;
+        }
+        /* navbar */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.97);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+            padding: 0 4rem;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .nav-logo {
+            font-family: 'Comorant Garamond', serif;
+            font-size: 1.6rem;
+            font-weight: 300;
+            letter-spacing: 0.25em;
+            color: var(--blanc);
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        .nav-logo span {
+            color: var(--or);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        .nav-links a {
+            font-family: 'Jost', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(248, 246, 241, 0.6);
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--or);
+        }
+        .nav-links a:hover::after,
+        .nav-links a:active::after {
+            width: 100%;
+        }
+        .nav-dashboard {
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--or) !important;
+            border: 1px solid rgba(201, 168, 76, 0.4);
+            padding: 0.4rem 1.2rem;
+            transition: all var(--transition) !important;
+        }
+        .nav-dashboard:hover {
+            background: var(--or) !important;
+            color: var(--noir) !important;
+        }
+        .nav-dashboard::after {
+            display: none !important;
+        }
+        /* contenu ppl */
+        main  {
+            flex: 1;
+            padding-top: 70px;
+        }
+        /* footer */
+        footer {
+            background: var(--noir);
+            color: rgba(248, 246, 241, 0.35);
+            text-align: center;
+            padding: 2.5rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(201, 168, 76, 0.15);
+        }
+        footer span {
+            color: var(--or);
+        }
+        .btn-or {
+            display: inline-block;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 400;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--noir);
+            background: var(--or);
+            border: none;
+            padding: 0.85rem 2.5rem;
+            cursor: none;
+            transition: all var(--transition);
+            text-decoration: none;
+        }
+        .btn-or:hover {
+            background: var(--or-clair);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(201, 168, 76, 0.3);
+        }
+        .btn-outline:hover {
+            background: var(--or);
+            color: var(--noir);
+        }
+        /* flash messages */
+        .flash {
+            padding: 1rem 2rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+        .flash.success {
+            background: rgba(201, 168, 76, 0.1);
+            color: var(--or);
+            border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+        }
+        .flash.error {
+            background: rgba(220, 80, 80, 0.1);
+            color: #dc5050;
+            border-bottom: 1px solid rgba(220, 80, 80, 0.2);
+        }
+
+        /* animation d'entrée */
+        @keyframes fadeUp {
+            from { 
+                opacity: 0;
+                transform: translateY(24px);
+            } to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-up {
+            animation: fadeUp 0.7s ease forwards;
+        }
+        
+    </style>
+    {% block styles %}{% endblock %}
+</head>
+<body>
+    <!-- Curseur personnalisé -->
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <a href="{{ url_for('index') }}" class="nav-logo">IA-<span>tsena</span></a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' }}">Boutique</a></li>
+            <li><a href="{{ url_for('dashboard') }}" class="nav-dashboard {{ 'active' if 'dashboard' in request.endpoint }}">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if message %}
+            {% for ctegorie, message in messages %}
+                <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- contenu de la page -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- footer -->
+    <footer>
+        <p><span>ia-tsena</span> - Tous droits réservés</p>
+    </footer>
+
+    <!-- scripts globaux -->
+    <script>
+        // curseur personnalisé
+        const cursor = document.getElementById('cursor');
+        const cursorRing = document.getElementById('cursorRing');
+
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX - 4 + 'px';
+            cursor.style.top = e.clientY - 4 + 'px';
+            cursorRing.style.left = e.clientX - 16 + 'px';
+            cursorRing.style.top = e.clientY - 16 + 'px';
+        });
+
+        // aggrandit le curseur sur les éléments cliquables
+        document.querySelectorAll('a, button, btn-or, .btn-outline').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.style.transform = 'scale(2.5)';
+                cursorRing.style.transform = 'scale(1.5)';
+                cursorRing.style.opacity = '1';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.style.transform = 'scale(1)';
+                cursorRing.style.transform = 'scale(1)';
+                cursorRing.style.opacity = '1';
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

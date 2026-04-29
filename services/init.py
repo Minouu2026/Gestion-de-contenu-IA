@@ -1,0 +1,2 @@
+from .analyse import get_articles_populaires, get_articles_faibles, get_stats_generales
+from .suggestion import get_suggestions, get_suggestions_par_categorie, get_suggestions_visiteur
