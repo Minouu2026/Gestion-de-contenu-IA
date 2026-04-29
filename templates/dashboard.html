@@ -364,7 +364,7 @@
                     </td>
                     <td>
                         <form action="{{ url_for('booster_article', id=article.id) }}" method="POST" style="display: inline;">
-                            <button type="submit" class="btn-booster" onclick="return confirm('Booster cet article ?')">
+                            <button type="submit" class="btn-booster" onclick="return confirm('Cet article sera mis en avant dans le sélection pour utilisateurs, voulez-vous vraiment booster ?')">
                                 <i class="fa-solid fa-rocket"></i>Booster
                             </button>
                         </form>
@@ -436,7 +436,7 @@
                     <td>
                         {% if article.boosted == false and article.est_faible() %}
                         <form action="{{ url_for('booster_article', id=article.id) }}" method="POST" style="display: inline;">
-                            <button type="submit" class="btn-booster" onclick="return confirm('Booster cet article ? ?')">
+                            <button type="submit" class="btn-booster" onclick="return confirm('Cet article sera mis en avant dans la sélection pour utilisateurs, voulez-vous vraiment booster ?')">
                                 <i class="fa-solid fa-rocket"></i>Booster
                             </button>
                         </form>
